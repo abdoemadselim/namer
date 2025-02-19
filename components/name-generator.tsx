@@ -123,9 +123,9 @@ export default function NameGenerator() {
           </motion.div>
           <div className="mt-6">
             <h3 className="text-xl text-end mt-10 font-semibold text-orange-600 mb-2">اسماء مفضلة</h3>
-            <ScrollArea className="h-[200px] w-full rounded-md border p-2">
+            <ScrollArea className="h-[200px] w-full rounded-md border p-1">
               {favorites.length === 0 ? (
-                <p className="text-center text-gray-500">No favorites yet. Heart a name to add it here!</p>
+                <p className="text-center text-gray-500 px-5">لا توجد أسماء مفضلة بعد. اضغط على القلب لإضافة اسم هنا! ❤️</p>
               ) : (
                 favorites.map((fav, index) => (
                   <div key={index} className="flex flex-row-reverse justify-between items-center mb-2">
