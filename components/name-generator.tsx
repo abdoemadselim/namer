@@ -128,7 +128,7 @@ export default function NameGenerator() {
                 <p className="text-center text-gray-500 px-5">لا توجد أسماء مفضلة بعد. اضغط على القلب لإضافة اسم هنا! ❤️</p>
               ) : (
                 favorites.map((fav, index) => (
-                  <div key={index} className="flex flex-row-reverse justify-between items-center mb-2">
+                  <div key={index} className="flex flex-row-reverse justify-between items-center mb-2 text-end px-2">
                     <div>
                       <span className={`font-semibold ${fav.gender === "boy" ? "text-blue-600" : "text-pink-600"}`}>
                         {fav.name}
