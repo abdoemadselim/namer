@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Moon, Sun, Stars } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Moon, Sun, Stars, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +14,19 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { arabicNames } from "@/data/arabicNames";
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function NameGenerator() {
   const [currentName, setCurrentName] = useState({ name: "", meaning: "" });
   const [isBoyName, setIsBoyName] = useState(true);
+  const [favorites, setFavorites] = useState<Array<{ name: string; meaning: string; gender: string }>>([])
+
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favoritesNames")
+    if (storedFavorites) {
+      setFavorites(JSON.parse(storedFavorites))
+    }
+  }, [])
 
   const generateName = (isBoyName: boolean) => {
     const names = isBoyName ? arabicNames.boy : arabicNames.girl;
@@ -25,10 +34,21 @@ export default function NameGenerator() {
     setCurrentName(names[randomIndex]);
   };
 
+  const toggleFavorite = (name: { name: string; meaning: string }) => {
+    const newFavorites = favorites.some((fav) => fav.name === name.name)
+      ? favorites.filter((fav) => fav.name !== name.name)
+      : [...favorites, { ...name, gender: isBoyName ? "boy" : "girl" }]
+
+    setFavorites(newFavorites)
+    localStorage.setItem("favoritesNames", JSON.stringify(newFavorites))
+  }
+
   const changeGender = () => {
     setIsBoyName(!isBoyName);
     generateName(!isBoyName)
   }
+
+  const isFavorite = (name: string) => favorites.some((fav) => fav.name === name)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-100 to-yellow-100 flex items-center justify-center overflow-hidden">
@@ -82,6 +102,13 @@ export default function NameGenerator() {
                   <p className="text-lg text-orange-600 mt-2">
                     {currentName.meaning || "اسم صغيرك"}
                   </p>
+                  {currentName.name && (
+                    <Button variant="ghost" size="sm" className="mt-2" onClick={() => toggleFavorite(currentName)}>
+                      <Heart
+                        className={`h-5 w-5 ${isFavorite(currentName.name) ? "fill-red-500 text-red-500" : "text-gray-500"}`}
+                      />
+                    </Button>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </motion.div>
@@ -94,6 +121,28 @@ export default function NameGenerator() {
               اختر اسم
             </Button>
           </motion.div>
+          <div className="mt-6">
+            <h3 className="text-xl text-end mt-10 font-semibold text-orange-600 mb-2">اسماء مفضلة</h3>
+            <ScrollArea className="h-[200px] w-full rounded-md border p-2">
+              {favorites.length === 0 ? (
+                <p className="text-center text-gray-500">No favorites yet. Heart a name to add it here!</p>
+              ) : (
+                favorites.map((fav, index) => (
+                  <div key={index} className="flex flex-row-reverse justify-between items-center mb-2">
+                    <div>
+                      <span className={`font-semibold ${fav.gender === "boy" ? "text-blue-600" : "text-pink-600"}`}>
+                        {fav.name}
+                      </span>
+                      <span className="text-sm text-gray-600 ml-2">- {fav.meaning}</span>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => toggleFavorite(fav)}>
+                      <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+                    </Button>
+                  </div>
+                ))
+              )}
+            </ScrollArea>
+          </div>
         </CardContent>
       </Card>
     </div>
